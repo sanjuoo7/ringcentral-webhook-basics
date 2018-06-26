@@ -7,26 +7,8 @@ if('production' !== process.env.RC_ENV ) require('dotenv').load();
 const RC = require('ringcentral');
 const http = require('http');
 const url = require('url');
-var nforce = require('nforce');
 
 var server = http.createServer();
-
-
-// create the connection with the Salesforce connected app
-var org = nforce.createConnection({
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.CALLBACK_URL,
-  mode: 'single'
-});
-
-// authenticate and return OAuth token
-    org.authenticate({
-      username: process.env.USERNAME,
-      password: process.env.PASSWORD+process.env.SECURITY_TOKEN
-    });
-
-
 
 // Instantiate RC-SDK
 var rcsdk = new RC({
@@ -288,14 +270,4 @@ function inboundRequest(req, res) {
             });
         }
     }
-
-
-    // Create Webhook/Subscription
-    function outboundCall(body) {
-        console.log('Event Filter Payload: ', eventFilterPayload);
-        // return platform.post('/subscription',
-        //     { });
-    }
-
-
 }
