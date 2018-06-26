@@ -20,6 +20,14 @@ var org = nforce.createConnection({
   mode: 'single'
 });
 
+// authenticate and return OAuth token
+    org.authenticate({
+      username: process.env.USERNAME,
+      password: process.env.PASSWORD+process.env.SECURITY_TOKEN
+    });
+
+
+
 // Instantiate RC-SDK
 var rcsdk = new RC({
     server: process.env.RC_SERVER,
@@ -275,30 +283,19 @@ function inboundRequest(req, res) {
             }).on('end', function() {
                 body = Buffer.concat(body).toString();
                 console.log('WEBHOOK EVENT BODY: ', body);
-
-                // authenticate and return OAuth token
-                org.authenticate({
-                  username: process.env.USERNAME,
-                  password: process.env.PASSWORD+process.env.SECURITY_TOKEN
-                }, function(err, resp){
-                  if (!err) {
-                    console.log('Successfully logged in! Cached Token: ' + org.oauth.access_token);
-                    // execute the query
-                    org.query({ query: 'select id, name from account limit 5' }, function(err, resp){
-                      if(!err && resp.records) {
-                        // output the account names
-                        for (i=0; i<resp.records.length;i++) {
-                          console.log(resp.records[i].get('name'));
-                        }
-                      }
-                    });
-                  }
-                  if (err) console.log(err);
-                });
-                
                 res.statusCode = 200;
                 res.end(body);
             });
         }
     }
+
+
+    // Create Webhook/Subscription
+    function outboundCall(body) {
+        console.log('Event Filter Payload: ', eventFilterPayload);
+        // return platform.post('/subscription',
+        //     { });
+    }
+
+
 }
